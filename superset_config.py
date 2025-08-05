@@ -1,0 +1,6 @@
+# superset_config.py
+FEATURE_FLAGS = {
+    "ENABLE_TEMPLATE_PROCESSING": True,
+}
+ENABLE_PROXY_FIX = True
+SECRET_KEY = "a-very-secret-key"

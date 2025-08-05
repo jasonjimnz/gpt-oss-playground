@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: banking_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio_storage
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+  superset:
+    image: jasonjimnz/superset_standalone:latest
+    container_name: superset_bi
+    depends_on:
+      - postgres
+    ports:
+      - "8008:8008"
+    environment:
+      SUPERSET_SECRET_KEY: "a-very-secret-key"
+      SUPERSET_CONFIG_PATH: "/app/superset_config.py"
+    volumes:
+      - ./superset_config.py:/app/superset_config.py
+      - superset_data:/var/lib/superset
+
+  dremio:
+    image: dremio/dremio-oss:latest
+    container_name: dremio_datawarehouse
+    ports:
+      - "9047:9047"
+      - "31010:31010"
+      - "32010:32010"
+    volumes:
+      - dremio_data:/opt/dremio/data
+
+volumes:
+  postgres_data:
+  minio_data:
+  superset_data:
+  dremio_data:
